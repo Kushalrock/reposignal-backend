@@ -18,7 +18,9 @@ app.use('*', honoLogger());
 app.use(
   '*',
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: ['https://reposignal.com',
+      'https://www.reposignal.com',
+      'http://localhost:9000'],
     credentials: true,
   })
 );
