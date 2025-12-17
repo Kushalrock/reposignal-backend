@@ -3,6 +3,7 @@ import { getRepositoryIssues } from '../modules/issues/list';
 import { getRepositoryDetail } from '../modules/repositories/detail';
 import { discoverRepositories } from '../modules/discovery/search';
 import { getRepositoryStats } from '../modules/stats/repository';
+import { getPublicProfile } from '../modules/profiles/get';
 
 const publicRoutes = new Hono();
 
@@ -63,6 +64,23 @@ publicRoutes.get('/repositories/:id/stats', async (c) => {
   } catch (error: any) {
     console.error('Stats fetch error:', error);
     return c.json({ error: error.message || 'Failed to fetch stats' }, 500);
+  }
+});
+
+// GET /public/users/:username
+publicRoutes.get('/users/:username', async (c) => {
+  try {
+    const username = c.req.param('username');
+    const profile = await getPublicProfile(username);
+
+    if (!profile) {
+      return c.json({ error: 'User not found' }, 404);
+    }
+
+    return c.json(profile);
+  } catch (error: any) {
+    console.error('Profile fetch error:', error);
+    return c.json({ error: error.message || 'Failed to fetch profile' }, 500);
   }
 });
 

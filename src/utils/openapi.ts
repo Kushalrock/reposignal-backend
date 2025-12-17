@@ -217,6 +217,16 @@ export const openAPISpec = {
             type: 'string',
             nullable: true,
           },
+          links: {
+            type: 'object',
+            nullable: true,
+            additionalProperties: true,
+            description: 'Optional external links or profile metadata',
+          },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+          },
         },
       },
       LogEntry: {
@@ -644,6 +654,47 @@ export const openAPISpec = {
       },
     },
 
+    '/public/users/{username}': {
+      get: {
+        tags: ['User Profile'],
+        summary: 'Get public user profile',
+        operationId: 'getPublicUserProfile',
+        parameters: [
+          {
+            name: 'username',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string',
+            },
+            description: 'GitHub username of the profile to fetch',
+          },
+        ],
+        responses: {
+          '200': {
+            description: 'Public profile data',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Profile',
+                },
+              },
+            },
+          },
+          '404': {
+            description: 'User not found',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/Error',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+
     // SETUP ROUTES (PUBLIC, NO AUTH)
     '/setup/context': {
       get: {
@@ -1058,6 +1109,12 @@ export const openAPISpec = {
                   bio: {
                     type: 'string',
                     nullable: true,
+                  },
+                  links: {
+                    type: 'object',
+                    nullable: true,
+                    additionalProperties: true,
+                    description: 'Optional external links or profile metadata',
                   },
                 },
               },

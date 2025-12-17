@@ -6,6 +6,9 @@ import {
   repositoryDomains,
   repositoryTags,
   repositoryFeedbackAggregates,
+  languages as languagesTable,
+  frameworks as frameworksTable,
+  domains as domainsTable,
 } from '../../db/schema/index';
 import { eq } from 'drizzle-orm';
 
@@ -23,20 +26,36 @@ export async function getRepositoryDetail(repoId: number) {
 
   // Get languages
   const languages = await db
-    .select()
+    .select({
+      id: repositoryLanguages.languageId,
+      matchingName: languagesTable.matchingName,
+      displayName: languagesTable.displayName,
+    })
     .from(repositoryLanguages)
+    .innerJoin(languagesTable, eq(repositoryLanguages.languageId, languagesTable.id))
     .where(eq(repositoryLanguages.repoId, repoId));
 
   // Get frameworks
   const frameworks = await db
-    .select()
+    .select({
+      id: repositoryFrameworks.frameworkId,
+      matchingName: frameworksTable.matchingName,
+      displayName: frameworksTable.displayName,
+      source: repositoryFrameworks.source,
+    })
     .from(repositoryFrameworks)
+    .innerJoin(frameworksTable, eq(repositoryFrameworks.frameworkId, frameworksTable.id))
     .where(eq(repositoryFrameworks.repoId, repoId));
 
   // Get domains
   const domains = await db
-    .select()
+    .select({
+      id: repositoryDomains.domainId,
+      matchingName: domainsTable.matchingName,
+      displayName: domainsTable.displayName,
+    })
     .from(repositoryDomains)
+    .innerJoin(domainsTable, eq(repositoryDomains.domainId, domainsTable.id))
     .where(eq(repositoryDomains.repoId, repoId));
 
   // Get tags
@@ -54,9 +73,9 @@ export async function getRepositoryDetail(repoId: number) {
 
   return {
     ...repo,
-    languages: languages.map((l) => ({ language: l.language, bytes: l.bytes })),
-    frameworks: frameworks.map((f) => ({ framework: f.framework, source: f.source })),
-    domains: domains.map((d) => d.domain),
+    languages,
+    frameworks,
+    domains,
     tags: tags.map((t) => t.tag),
     feedback: feedbackAgg
       ? {
