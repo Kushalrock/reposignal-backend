@@ -1503,6 +1503,10 @@ export const openAPISpec = {
                     type: 'string',
                     description: 'Repository name',
                   },
+                  reposignalDescription: {
+                    type: 'string',
+                    description: 'Custom repository description for Reposignal',
+                  },
                   state: {
                     type: 'string',
                     enum: ['off', 'public', 'paused'],

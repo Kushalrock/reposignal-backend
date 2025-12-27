@@ -7,6 +7,7 @@ export interface AddRepositoryPayload {
   githubRepoId: number;
   owner: string;
   name: string;
+  reposignalDescription?: string;
   state?: 'off' | 'public' | 'paused';
   starsCount?: number;
   forksCount?: number;
@@ -19,6 +20,7 @@ export async function addRepository(payload: AddRepositoryPayload) {
     githubRepoId,
     owner,
     name,
+    reposignalDescription,
     state = 'off',
     starsCount = 0,
     forksCount = 0,
@@ -48,6 +50,7 @@ export async function addRepository(payload: AddRepositoryPayload) {
       githubRepoId,
       owner,
       name,
+      reposignalDescription,
       state,
       starsCount,
       forksCount,
