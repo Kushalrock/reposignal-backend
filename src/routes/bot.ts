@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { botAuth } from '../auth/botAuth';
 import { syncInstallation } from '../modules/installations/sync';
 import { classifyIssue } from '../modules/issues/classify';
+import { deleteIssue } from '../modules/issues/delete';
 import { updateRepositoryMetadata, addDomains, deleteDomain, addTags, deleteTag } from '../modules/repositories/updateMetadata';
 import { addRepository } from '../modules/repositories/add';
 import { updateRepositorySettings } from '../modules/repositories/updateSettings';
@@ -36,6 +37,18 @@ bot.post('/issues/classify', async (c) => {
   } catch (error: any) {
     console.error('Issue classification error:', error);
     return c.json({ error: error.message || 'Failed to classify issue' }, 500);
+  }
+});
+
+// DELETE /bot/issues
+bot.delete('/issues', async (c) => {
+  try {
+    const body = await c.req.json();
+    const result = await deleteIssue(body);
+    return c.json(result);
+  } catch (error: any) {
+    console.error('Issue deletion error:', error);
+    return c.json({ error: error.message || 'Failed to delete issue' }, 500);
   }
 });
 
