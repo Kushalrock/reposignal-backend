@@ -403,7 +403,7 @@ This project is licensed under the GNU-AGPL 3.0 License - see the [LICENSE](./LI
 ## 🔗 Links
 
 - **Website**: [reposignal.com](https://reposignal.com)
-- **Documentation**: [docs.reposignal.com](https://docs.reposignal.com)
+- **Documentation (Under Development)**: [docs.reposignal.com](https://reposignal.com/docs)
 - **GitHub**: [github.com/reposignal](https://github.com/reposignal)
 
 ---
