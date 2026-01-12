@@ -8,7 +8,7 @@ const execAsync = promisify(exec);
 
 // Load environment variables
 const {
-  DATABASE_URL,
+  DATABASE_URL = "",
   AWS_S3_BACKUP_BUCKET,
   AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY,
@@ -61,6 +61,25 @@ function generateBackupFilename(): string {
 }
 
 /**
+ * Parse PostgreSQL connection URL
+ */
+function parseDatabaseUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    return {
+      user: decodeURIComponent(parsed.username),
+      password: decodeURIComponent(parsed.password),
+      host: parsed.hostname,
+      port: parsed.port || '5432',
+      database: parsed.pathname.slice(1), // Remove leading slash
+    };
+  } catch (error) {
+    console.error('❌ Failed to parse DATABASE_URL');
+    throw error;
+  }
+}
+
+/**
  * Create a PostgreSQL database dump
  */
 async function createDatabaseDump(filename: string): Promise<string> {
@@ -69,9 +88,19 @@ async function createDatabaseDump(filename: string): Promise<string> {
   const dumpPath = resolve(process.cwd(), filename);
   
   try {
-    // Use pg_dump to create the backup
-    const command = `pg_dump "${DATABASE_URL}" > "${dumpPath}"`;
-    await execAsync(command);
+    // Parse the database URL to extract connection details
+    const dbConfig = parseDatabaseUrl(DATABASE_URL);
+    
+    // Build pg_dump command with individual parameters to handle special characters
+    const command = `pg_dump -h "${dbConfig.host}" -p "${dbConfig.port}" -U "${dbConfig.user}" -d "${dbConfig.database}" -F p -f "${dumpPath}"`;
+    
+    // Set PGPASSWORD environment variable to avoid password prompt
+    const env = {
+      ...process.env,
+      PGPASSWORD: dbConfig.password,
+    };
+    
+    await execAsync(command, { env });
     
     console.log(`✅ Database dump created: ${filename}`);
     return dumpPath;
